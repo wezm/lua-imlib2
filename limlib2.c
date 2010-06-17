@@ -11,6 +11,7 @@ typedef Imlib_Color_Modifier ColorModifier;
 typedef Imlib_Color_Range Gradient;
 typedef ImlibPolygon Polygon;
 typedef Imlib_Font Font;
+typedef Imlib_Filter Filter;
 
 static struct { const char *fmtstr; Imlib_Load_Error errno; } err_strings[] = {
   {"file '%s' does not exist", IMLIB_LOAD_ERROR_FILE_DOES_NOT_EXIST},
@@ -196,6 +197,54 @@ static int borderm__newindex(lua_State *L) {
     b->bottom = val;
 
   return 0;
+}
+
+/* imlib2.filter */
+
+static Filter push_Filter(lua_State *L, Filter filt) {
+  Filter *filtp = (Filter*)lua_newuserdata(L, sizeof(Filter));
+  *filtp = filt;
+  luaL_getmetatable(L, "imlib2.filter");
+  lua_setmetatable(L, -2);
+  return filt;
+}
+
+static Filter check_Filter(lua_State *L, int n) {
+  Filter *filtp, filt;
+  filtp = (Filter*)luaL_checkudata(L, n, "imlib2.filter");
+  filt = *filtp;
+  if (filt == NULL)
+    luaL_argerror(L, n, "filter has been freed");
+  return filt;
+}
+
+/* filter.new() */
+static int filter_new(lua_State *L) {
+  Filter filt = push_Filter(L, imlib_create_filter(0));
+  if (filt == NULL)
+    return luaL_error(L, "failed with imlib_create_filter");
+  return 1;
+}
+
+static int filterm_gc(lua_State *L) {
+  Filter *filtp = (Polygon*)luaL_checkudata(L, 1, "imlib2.polygon");
+  Filter filt = *filtp;
+  if (filt) {
+    imlib_context_set_filter(filt); /* Assign to the context so it will be freed below */
+    imlib_free_filter();
+    *filtp=NULL;
+  }
+  return 0;
+}
+
+/* filter:__tostring() */
+static int filterm_tostring(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  if (filt)
+    lua_pushfstring(L, "<imlib2.filter> (%p)", filt);
+  else
+    lua_pushfstring(L, "<imlib2.filter> (freed)");
+  return 1;
 }
 
 /* imlib2.gradient */
@@ -1048,7 +1097,6 @@ static int imagem_draw_text(lua_State *L) {
   return 4;
 }
 
-/* TODO: Look at imlib_filter_* */
 
 /* img:save(path) */
 static int imagem_save(lua_State *L) {
@@ -1127,6 +1175,17 @@ static const struct luaL_Reg color_m [] = {
   {"__tostring", colorm_tostring},
   {"__index", colorm__index},
   {"__newindex", colorm__newindex},
+  {NULL, NULL}
+};
+
+static const struct luaL_Reg filter_f [] = {
+  {"new", filter_new},
+  {NULL, NULL}
+};
+
+static const struct luaL_Reg filter_m [] = {
+  {"__gc", filterm_gc},
+  {"__tostring", filterm_tostring},
   {NULL, NULL}
 };
 
@@ -1256,6 +1315,12 @@ int luaopen_limlib2(lua_State *L) {
   lua_setfield(L, -2, "__index");
   luaL_register(L, NULL, color_m);
   luaL_register(L, "imlib2.color", color_f);
+
+  luaL_newmetatable(L, "imlib2.filter");
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -2, "__index");
+  luaL_register(L, NULL, filter_m);
+  luaL_register(L, "imlib2.filter", filter_f);
 
   luaL_newmetatable(L, "imlib2.gradient");
   lua_pushvalue(L, -1);
