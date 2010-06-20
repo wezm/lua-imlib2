@@ -230,7 +230,7 @@ static int filterm_gc(lua_State *L) {
   Filter *filtp = (Polygon*)luaL_checkudata(L, 1, "imlib2.polygon");
   Filter filt = *filtp;
   if (filt) {
-    imlib_context_set_filter(filt); /* Assign to the context so it will be freed below */
+    imlib_context_set_filter(filt);
     imlib_free_filter();
     *filtp=NULL;
   }
@@ -245,6 +245,115 @@ static int filterm_tostring(lua_State *L) {
   else
     lua_pushfstring(L, "<imlib2.filter> (freed)");
   return 1;
+}
+
+/* filter:set(int xoff, int yoff, color) */
+static int filterm_set(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int xoff = luaL_checkint(L, 2);
+  int yoff = luaL_checkint(L, 3);
+  int a = luaL_checkint(L, 4);
+  int r = luaL_checkint(L, 5);
+  int g = luaL_checkint(L, 6);
+  int b = luaL_checkint(L, 7);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_set(xoff, yoff, a, r, g, b);
+  return 0;
+}
+
+/* filter:set_alpha(int xoff, int yoff, color) */
+static int filterm_set_alpha(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int xoff = luaL_checkint(L, 2);
+  int yoff = luaL_checkint(L, 3);
+  int a = luaL_checkint(L, 4);
+  int r = luaL_checkint(L, 5);
+  int g = luaL_checkint(L, 6);
+  int b = luaL_checkint(L, 7);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_set_alpha(xoff, yoff, a, r, g, b);
+  return 0;
+}
+
+/* filter:set_red(int xoff, int yoff, color) */
+static int filterm_set_red(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int xoff = luaL_checkint(L, 2);
+  int yoff = luaL_checkint(L, 3);
+  int a = luaL_checkint(L, 4);
+  int r = luaL_checkint(L, 5);
+  int g = luaL_checkint(L, 6);
+  int b = luaL_checkint(L, 7);
+
+  /* Ensure the filter is assigned to the context */
+  imlib_context_set_filter(filt);
+
+  imlib_filter_set_red(xoff, yoff, a, r, g, b);
+  return 0;
+}
+
+/* filter:set_green(int xoff, int yoff, color) */
+static int filterm_set_green(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int xoff = luaL_checkint(L, 2);
+  int yoff = luaL_checkint(L, 3);
+  int a = luaL_checkint(L, 4);
+  int r = luaL_checkint(L, 5);
+  int g = luaL_checkint(L, 6);
+  int b = luaL_checkint(L, 7);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_set_green(xoff, yoff, a, r, g, b);
+  return 0;
+}
+
+/* filter:set_blue(int xoff, int yoff, color) */
+static int filterm_set_blue(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int xoff = luaL_checkint(L, 2);
+  int yoff = luaL_checkint(L, 3);
+  int a = luaL_checkint(L, 4);
+  int r = luaL_checkint(L, 5);
+  int g = luaL_checkint(L, 6);
+  int b = luaL_checkint(L, 7);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_set_blue(xoff, yoff, a, r, g, b);
+  return 0;
+}
+
+/* filter:constants(int a, int r, int g, int b) */
+static int filterm_constants(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int a = luaL_checkint(L, 2);
+  int r = luaL_checkint(L, 3);
+  int g = luaL_checkint(L, 4);
+  int b = luaL_checkint(L, 5);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_constants(a, r, g, b);
+  return 0;
+}
+
+/* filter:divisors(int a, int r, int g, int b) */
+static int filterm_divisors(lua_State *L) {
+  Filter filt = check_Filter(L, 1);
+  int a = luaL_checkint(L, 2);
+  int r = luaL_checkint(L, 3);
+  int g = luaL_checkint(L, 4);
+  int b = luaL_checkint(L, 5);
+
+  imlib_context_set_filter(filt);
+
+  imlib_filter_divisors(a, r, g, b);
+  return 0;
 }
 
 /* imlib2.gradient */
@@ -1097,6 +1206,16 @@ static int imagem_draw_text(lua_State *L) {
   return 4;
 }
 
+/* img:filter(filter) */
+static int imagem_filter(lua_State *L) {
+  Image im = check_Image(L, 1);
+  Filter filt = check_Filter(L, 2);
+
+  imlib_context_set_filter(filt);
+  imlib_context_set_image(im);
+  imlib_image_filter();
+  return 0;
+}
 
 /* img:save(path) */
 static int imagem_save(lua_State *L) {
@@ -1151,6 +1270,25 @@ static int flush_cache(lua_State *L) {
   return 0;
 }
 
+/* imlib2.set_filter() */
+static int set_filter(lua_State *L) {
+  Filter filt;
+  luaL_checkany(L, 1);
+  filt = lua_type(L, 1) == LUA_TNIL ? NULL : check_Filter(L, 1);
+  imlib_context_set_filter(filt);
+  return 0;
+}
+
+/* imlib2.get_filter() */
+static int get_filter(lua_State *L) {
+  Filter filt = imlib_context_get_filter();
+  if(filt != NULL)
+    push_Filter(L, filt);
+  else
+    lua_pushnil(L);
+
+  return 1;
+}
 
 /*** Registration and initialization ***/
 
@@ -1186,6 +1324,13 @@ static const struct luaL_Reg filter_f [] = {
 static const struct luaL_Reg filter_m [] = {
   {"__gc", filterm_gc},
   {"__tostring", filterm_tostring},
+  {"set", filterm_set},
+  {"set_alpha", filterm_set_alpha},
+  {"set_red", filterm_set_red},
+  {"set_green", filterm_set_green},
+  {"set_blue", filterm_set_blue},
+  {"constants", filterm_constants},
+  {"divisors", filterm_divisors},
   {NULL, NULL}
 };
 
@@ -1287,6 +1432,7 @@ static const struct luaL_Reg image_m [] = {
   {"draw_ellipse", imagem_draw_ellipse},
   {"fill_ellipse", imagem_fill_ellipse},
   {"draw_text", imagem_draw_text},
+  {"filter", imagem_filter},
   {"clone", imagem_clone},
   {"save", imagem_save},
   {NULL, NULL}
@@ -1298,6 +1444,8 @@ static const struct luaL_Reg f [] = {
   {"get_cache_size", get_cache_size},
   {"set_cache_size", set_cache_size},
   {"flush_cache", flush_cache},
+  {"get_filter", get_filter},
+  {"set_filter", set_filter},
   {NULL, NULL}
 };
 
