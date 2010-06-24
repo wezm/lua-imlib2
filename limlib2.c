@@ -1267,7 +1267,7 @@ static int flush_cache(lua_State *L) {
 static int set_filter(lua_State *L) {
   Filter filt;
   luaL_checkany(L, 1);
-  filt = lua_type(L, 1) == LUA_TNIL ? NULL : check_Filter(L, 1);
+  filt = lua_isnil(L, 1) ? NULL : check_Filter(L, 1);
   imlib_context_set_filter(filt);
   return 0;
 }
