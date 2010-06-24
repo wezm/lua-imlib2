@@ -247,7 +247,7 @@ static int filterm_tostring(lua_State *L) {
   return 1;
 }
 
-/* filter:set(int xoff, int yoff, color) */
+/* filter:set(xoff, yoff, a, r, g, b) */
 static int filterm_set(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int xoff = luaL_checkint(L, 2);
@@ -258,12 +258,11 @@ static int filterm_set(lua_State *L) {
   int b = luaL_checkint(L, 7);
 
   imlib_context_set_filter(filt);
-
   imlib_filter_set(xoff, yoff, a, r, g, b);
   return 0;
 }
 
-/* filter:set_alpha(int xoff, int yoff, color) */
+/* filter:set_alpha(xoff, yoff, a, r, g, b) */
 static int filterm_set_alpha(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int xoff = luaL_checkint(L, 2);
@@ -274,12 +273,11 @@ static int filterm_set_alpha(lua_State *L) {
   int b = luaL_checkint(L, 7);
 
   imlib_context_set_filter(filt);
-
   imlib_filter_set_alpha(xoff, yoff, a, r, g, b);
   return 0;
 }
 
-/* filter:set_red(int xoff, int yoff, color) */
+/* filter:set_red(xoff, yoff, a, r, g, b) */
 static int filterm_set_red(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int xoff = luaL_checkint(L, 2);
@@ -289,14 +287,12 @@ static int filterm_set_red(lua_State *L) {
   int g = luaL_checkint(L, 6);
   int b = luaL_checkint(L, 7);
 
-  /* Ensure the filter is assigned to the context */
   imlib_context_set_filter(filt);
-
   imlib_filter_set_red(xoff, yoff, a, r, g, b);
   return 0;
 }
 
-/* filter:set_green(int xoff, int yoff, color) */
+/* filter:set_green(xoff, yoff, a, r, g, b) */
 static int filterm_set_green(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int xoff = luaL_checkint(L, 2);
@@ -307,12 +303,11 @@ static int filterm_set_green(lua_State *L) {
   int b = luaL_checkint(L, 7);
 
   imlib_context_set_filter(filt);
-
   imlib_filter_set_green(xoff, yoff, a, r, g, b);
   return 0;
 }
 
-/* filter:set_blue(int xoff, int yoff, color) */
+/* filter:set_blue(xoff, yoff, a, r, g, b) */
 static int filterm_set_blue(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int xoff = luaL_checkint(L, 2);
@@ -323,12 +318,11 @@ static int filterm_set_blue(lua_State *L) {
   int b = luaL_checkint(L, 7);
 
   imlib_context_set_filter(filt);
-
   imlib_filter_set_blue(xoff, yoff, a, r, g, b);
   return 0;
 }
 
-/* filter:constants(int a, int r, int g, int b) */
+/* filter:constants(a, r, g, b) */
 static int filterm_constants(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int a = luaL_checkint(L, 2);
@@ -337,12 +331,11 @@ static int filterm_constants(lua_State *L) {
   int b = luaL_checkint(L, 5);
 
   imlib_context_set_filter(filt);
-
   imlib_filter_constants(a, r, g, b);
   return 0;
 }
 
-/* filter:divisors(int a, int r, int g, int b) */
+/* filter:divisors(a, r, g, b) */
 static int filterm_divisors(lua_State *L) {
   Filter filt = check_Filter(L, 1);
   int a = luaL_checkint(L, 2);
