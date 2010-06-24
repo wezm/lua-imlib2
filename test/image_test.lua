@@ -22,5 +22,14 @@ do
     assert_pass("quality of 100 should pass", function() a_image:set_quality(100) end)
   end
 
+  function test_set_get_alpha_true()
+    a_image:set_has_alpha(true)
+    assert_true(a_image:has_alpha(), "should have alpha channel")
+  end
+
+  function test_set_get_alpha_false()
+    a_image:set_has_alpha(false)
+    assert_false(a_image:has_alpha(), "should not have alpha channel")
+  end
 end
 

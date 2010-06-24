@@ -685,7 +685,7 @@ static int imagem_has_alpha(lua_State *L) {
 static int imagem_set_alpha(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
-  imlib_image_set_has_alpha(lua_toboolean(L, 1));
+  imlib_image_set_has_alpha(lua_toboolean(L, 2));
   return 0;
 }
 
