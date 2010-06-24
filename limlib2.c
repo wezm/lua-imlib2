@@ -718,6 +718,18 @@ static int imagem_get_pixel(lua_State *L) {
   return 1;
 }
 
+/* img:set_quality(quality) */
+static int imagem_set_quality(lua_State *L) {
+  Image im = check_Image(L, 1);
+  int qual = luaL_checkint(L, 2);
+  luaL_argcheck(L, qual >= 0 && qual <= 100, 2, "quality must be >= 0 and <= 100");
+
+  imlib_context_set_image(im);
+  imlib_image_attach_data_value("quality", NULL, qual, NULL);
+  return 0;
+}
+
+
 /*** imlib2.image metamethods which wrap functions that return copies (but are  
  * written to change self, to fit in with the rest of the api
  ***/
@@ -810,7 +822,7 @@ static int imagem_orientate(lua_State *L) {
   return 1;
 }
 
-/* img:blue(radius) */
+/* img:blur(radius) */
 static int imagem_blur(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1203,6 +1215,7 @@ static const struct luaL_Reg image_m [] = {
   {"get_border", imagem_get_border},
   {"set_border", imagem_set_border},
   {"get_pixel", imagem_get_pixel},
+  {"set_quality", imagem_set_quality},
   {"crop", imagem_crop},
   {"crop_and_scale", imagem_crop_and_scale},
   {"rotate", imagem_rotate},
