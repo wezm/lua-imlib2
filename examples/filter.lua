@@ -10,6 +10,8 @@ imlib2.set_filter(filter)
 
 -- Filters ported from:
 -- http://svn.enlightenment.org/svn/e/trunk/imlib2/src/bin/imlib2_show.c
+-- http://docs.gimp.org/en/plug-in-convmatrix.html gives a basic intro to
+-- how the filters work
 if (filter_name == "blur") then
   -- Blur filter
   filter:set(0, 0, 0, 8, 8, 8)
