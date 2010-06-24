@@ -787,6 +787,28 @@ static int imagem_rotate(lua_State *L) {
 
 /*** End metamethods for copy-returning functions ***/
 
+/* img:blend_image(img, merge_alpha, source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height */
+/* TODO: There are too many arguments to this method, need to come up with a better interface */
+static int imagem_blend_image(lua_State *L) {
+  Image dest = check_Image(L, 1);
+  Image src = check_Image(L, 2);
+  /*luaL_checkany(L, 3);*/
+  char merge_alpha = (char)lua_toboolean(L, 3);
+  int src_x = luaL_checkint(L, 4);
+  int src_y = luaL_checkint(L, 5);
+  int src_width = luaL_checkint(L, 6);
+  int src_height = luaL_checkint(L, 7);
+  int dest_x = luaL_checkint(L, 8);
+  int dest_y = luaL_checkint(L, 9);
+  int dest_width = luaL_checkint(L, 10);
+  int dest_height = luaL_checkint(L, 11);
+
+  imlib_context_set_image(dest);
+  imlib_blend_image_onto_image(src, merge_alpha, src_x, src_y, src_width, src_height, dest_x, dest_y, dest_width, dest_height);
+  return 0;
+}
+
+
 /* TODO imlib_blend_image_onto_image_at_angle */
 /* TODO imlib_blend_image_onto_image_skewed */
 
@@ -1219,6 +1241,7 @@ static const struct luaL_Reg image_m [] = {
   {"crop", imagem_crop},
   {"crop_and_scale", imagem_crop_and_scale},
   {"rotate", imagem_rotate},
+  {"blend_image", imagem_blend_image},
   {"flip_horizontal", imagem_flip_horizontal},
   {"flip_vertical", imagem_flip_vertical},
   {"flip_diagonal", imagem_flip_diagonal},
