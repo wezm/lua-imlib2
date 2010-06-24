@@ -41,17 +41,7 @@ end
 
 module("Filter functions", lunit.testcase)
 do
-  function test_get_filter_unset()
-    assert_nil(imlib2.get_filter())
-  end
-
-  function test_get_set_filter()
-    filter = imlib2.filter.new()
-    imlib2.set_filter(filter)
-    assert_equal(filter, imlib2.get_filter())
-  end
-
-  function test_clear_filter()
+  function test_set_get_filter()
     filter = imlib2.filter.new()
     imlib2.set_filter(filter)
     imlib2.set_filter(nil)
