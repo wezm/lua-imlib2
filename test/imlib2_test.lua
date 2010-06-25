@@ -38,3 +38,13 @@ do
     assert_equal(orig, imlib2.get_cache_size())
   end
 end
+
+module("Filter functions", lunit.testcase)
+do
+  function test_set_get_filter()
+    filter = imlib2.filter.new()
+    imlib2.set_filter(filter)
+    imlib2.set_filter(nil)
+    assert_nil(imlib2.get_filter())
+  end
+end
